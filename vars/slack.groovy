@@ -1,4 +1,4 @@
-def sendSlackNotification() {
+def sendNotification() {
     def result = currentBuild.currentResult
     def notify = true
     /*
