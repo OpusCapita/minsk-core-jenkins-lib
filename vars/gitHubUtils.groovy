@@ -3,8 +3,8 @@
  * - git@github.com:OpusCapita/minsk-core-jenkins-utils.git
  * - https://github.com/OpusCapita/minsk-core-jenkins-utils/commit/28eed320e8bb644d24ec4c30d220803a6b69b664
  */
- def extractRepositoryOwnerAndName(gitHubRepoUrl) {
-     def result = gitHubRepoUrl;
+ def extractRepositoryOwnerAndName(gitHubUrl) {
+     def result = gitHubUrl;
      // cut one of the prefixes if present
      if (gitHubRepoUrl.toLowerCase().startsWith('https://github.com/')) {
          result = result.substring('https://github.com/'.length())

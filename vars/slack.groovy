@@ -8,16 +8,10 @@ def sendNotification() {
     */
     def message = ""
     wrap([$class: 'BuildUser']) {
-        def ref = currentBuild.changeSets.collect { changeSet ->
-            changeSet.browser.getChangeSetLink(changeSet.find { true })?.toString()
-        }.find { true }
-        if (ref) {
-            ref = ref.substring(0, ref.indexOf('/commit/'))
-            message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>; push) in <${ref}|${gitHubUtils.extractRepositoryOwnerAndName(ref)}> (${env.BRANCH_NAME})"
-        } else {
-            def scmInfo = checkout scm
-            message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) no changes in repo <${scmInfo.GIT_URL}|${gitHubUtils.extractRepositoryOwnerAndName(ref)}> (${env.BRANCH_NAME})"
-        }
+        def scmInfo = checkout scm
+        def branchBuildUrl = (!env.BUILD_URL.endsWith('/'))?:env.BUILD_URL.substring(0, env.BUILD_URL.length - 2)
+        def repoBuildUrl = (env.branchBuildUrl.lastIndexOf('/') <= 0)?branchBuildUrl:branchBuildUrl.substring(0, env.branchBuildUrl.lastIndexOf('/') - 1)
+        message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in <${repoBuildUrl}|${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)}> (<${branchBuildUrl}}${env.BRANCH_NAME}>)"
     }
     def buildStatus = currentBuild.currentResult
     message = "${(buildStatus == 'FAILURE')?'Failed':'Success'}: ${message}"
