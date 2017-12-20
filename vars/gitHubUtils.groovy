@@ -6,9 +6,9 @@
  def extractRepositoryOwnerAndName(gitHubUrl) {
      def result = gitHubUrl;
      // cut one of the prefixes if present
-     if (gitHubRepoUrl.toLowerCase().startsWith('https://github.com/')) {
+     if (gitHubUrl.toLowerCase().startsWith('https://github.com/')) {
          result = result.substring('https://github.com/'.length())
-     } else if (gitHubRepoUrl.toLowerCase().startsWith('git@github.com:')) {
+     } else if (gitHubUrl.toLowerCase().startsWith('git@github.com:')) {
        	result = result.substring('git@github.com:'.length())
      }
      // cut suffix if present
