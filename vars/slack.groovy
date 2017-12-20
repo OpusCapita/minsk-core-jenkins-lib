@@ -9,8 +9,8 @@ def sendNotification() {
     def message = ""
     wrap([$class: 'BuildUser']) {
         def scmInfo = checkout scm
-        def branchBuildUrl = (!env.BUILD_URL.endsWith('/'))?:env.BUILD_URL.substring(0, env.BUILD_URL.length() - 2)
-        def repoBuildUrl = (branchBuildUrl.lastIndexOf('/') <= 0)?branchBuildUrl:branchBuildUrl.substring(0, branchBuildUrl.lastIndexOf('/') - 1)
+        def branchBuildUrl = (!env.BUILD_URL.endsWith('/'))?:env.BUILD_URL.substring(0, env.BUILD_URL.length() - 1)
+        def repoBuildUrl = (branchBuildUrl.lastIndexOf('/') <= 0)?branchBuildUrl:branchBuildUrl.substring(0, branchBuildUrl.lastIndexOf('/'))
         message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in <${repoBuildUrl}|${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)}> (<${branchBuildUrl}}|${env.BRANCH_NAME}>)"
     }
     def buildStatus = currentBuild.currentResult
