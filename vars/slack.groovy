@@ -27,6 +27,6 @@ def sendNotification() {
                 message = "${message}\n- ${change.msg} (<${link}|${link.substring(link.lastIndexOf('/') + 1, link.length()).substring(0, 7)}> by ${change.author.toString()})"
             }
         }
-        slackSend channel: "#minsk-coreteam-ci", message: message, color: (result == 'FAILURE')?'danger':'good'
+        slackSend message: message, color: (result == 'FAILURE')?'danger':'good'
     }
 }
