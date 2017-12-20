@@ -1,3 +1,4 @@
+// add new comment about build proces and its status to a Jira tickets if VC changes contains links to any Jira ticket
 def addComments() {
     // jiraIssues is a Map kie this: ['TEST-1, TEST-2']
     def jiraIssueKeys = jiraIssueSelector(issueSelector: [$class: 'DefaultIssueSelector'])
