@@ -1,3 +1,4 @@
+// current implementation works with GutHub only
 def sendNotification() {
     def result = currentBuild.currentResult
     def notify = true
@@ -16,7 +17,8 @@ def sendNotification() {
                 ref = ref.substring(0, ref.indexOf('/commit/'))
                 message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>; push) in <${ref}|${ref - "https://github.com/"}> (${env.BRANCH_NAME})"
             } else {
-                message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) no changes (${env.BRANCH_NAME})"
+                def scmInfo = checkout scm
+                message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) no changes in repo <${scmInfo.GIT_URL}|${scmInfo.GIT_URL - "https://github.com/"} (${env.BRANCH_NAME})"
             }
         }
         message = "${(result == 'FAILURE')?'Failed':'Success'}: ${message}"
