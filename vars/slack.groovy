@@ -1,9 +1,6 @@
 // sends build notification to preconfigured on server side slack channel
 // current implementation works with GutHub only
 def sendNotification() {
-    def result = currentBuild.currentResult
-    // testing code extraction/dividing approach
-    privateClosure()
     /*
     uncommented this code if you want notify message to slake between state change FAILURE -> SUCCESS || SUCCESS -> FAILURE
     def previousResult = currentBuild.previousBuild?.result
@@ -22,7 +19,8 @@ def sendNotification() {
             message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) no changes in repo <${scmInfo.GIT_URL}|${gitHubUtils.extractRepositoryOwnerAndName(ref)}> (${env.BRANCH_NAME})"
         }
     }
-    message = "${(result == 'FAILURE')?'Failed':'Success'}: ${message}"
+    def buildStatus = currentBuild.currentResult
+    message = "${(buildStatus == 'FAILURE')?'Failed':'Success'}: ${message}"
     currentBuild.changeSets.each { changeSet ->
         def browser = changeSet.browser
         changeSet.each { change ->
@@ -30,5 +28,5 @@ def sendNotification() {
             message = "${message}\n- ${change.msg} (<${link}|${link.substring(link.lastIndexOf('/') + 1, link.length()).substring(0, 7)}> by ${change.author.toString()})"
         }
     }
-    slackSend message: message, color: (result == 'FAILURE')?'danger':'good'
+    slackSend message: message, color: (buildStatus == 'FAILURE')?'danger':'good'
 }
