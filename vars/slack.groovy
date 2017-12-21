@@ -1,7 +1,7 @@
 // sends build notification to preconfigured on server side slack channel
 // current implementation works with GutHub only
 def sendNotification() {
-    env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
+    println scm
     def message = ""
     wrap([$class: 'BuildUser']) {
         // retrieving repository information
