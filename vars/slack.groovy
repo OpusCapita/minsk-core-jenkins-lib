@@ -8,10 +8,19 @@ def sendNotification() {
     */
     def message = ""
     wrap([$class: 'BuildUser']) {
+        // retrieving repository information
         def scmInfo = checkout scm
-        def branchBuildUrl = (!env.BUILD_URL.endsWith('/'))?:env.BUILD_URL.substring(0, env.BUILD_URL.length() - 1)
-        def repoBuildUrl = (branchBuildUrl.lastIndexOf('/') <= 0)?branchBuildUrl:branchBuildUrl.substring(0, branchBuildUrl.lastIndexOf('/'))
-        message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in <${repoBuildUrl}|${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)}> (<${branchBuildUrl}}|${env.BRANCH_NAME}>)"
+        // extracting branch and whole repo build server job urls if possible
+        def regex = "((.+/job/.+/)job/.+/).+/"
+        def findings = (url =~ /$regex/)
+        if (findings.matches()) {
+            branchBuildUrl = findings.group(1)
+            repositoryBuildUrl = findings.group(2)
+            message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in <${repositoryBuildUrl}|${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)}> (<${branchBuildUrl}}|${env.BRANCH_NAME}>)"
+        } else {
+            message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in ${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)} (${env.BRANCH_NAME})"
+        }
+
     }
     def buildStatus = currentBuild.currentResult
     message = "${(buildStatus == 'FAILURE')?'Failed':'Success'}: ${message}"
