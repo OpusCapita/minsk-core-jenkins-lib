@@ -1,8 +1,20 @@
 // sends build notification to preconfigured on server side slack channel
 // current implementation works with GutHub only
 def sendNotification() {
+    def lastChangesetAuthor = null
+    def changesDescription = "";
+    currentBuild.changeSets.each { changeSet ->
+        def browser = changeSet.browser
+        changeSet.each { change ->
+            lastChangesetAuthor = change.author.toString()
+            def link = browser.getChangeSetLink(change).toString()
+            changesDescription = "${changesDescription}\n- ${change.msg} (<${link}|${link.substring(link.lastIndexOf('/') + 1, link.length()).substring(0, 7)}> by ${change.author.toString()})"
+        }
+    }
+
     def message = ""
     wrap([$class: 'BuildUser']) {
+        def user = lastChangesetAuthor?:env.BUILD_USER_ID
         env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
         // retrieving repository information
         def scmInfo = checkout scm
@@ -12,20 +24,14 @@ def sendNotification() {
         if (findings.matches()) {
             def branchBuildUrl = findings.group(1)
             def repositoryBuildUrl = findings.group(2)
-            message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in <${repositoryBuildUrl}|${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)}> (<${branchBuildUrl}|${env.BRANCH_NAME}>)"
+            message = "${user}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in <${repositoryBuildUrl}|${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)}> (<${branchBuildUrl}|${env.BRANCH_NAME}>)"
         } else {
-            message = "${env.BUILD_USER_ID}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in ${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)} (${env.BRANCH_NAME})"
+            message = "${user}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in ${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)} (${env.BRANCH_NAME})"
         }
 
     }
     def buildStatus = currentBuild.currentResult
-    message = "${(buildStatus == 'FAILURE')?'Failed':'Success'}: ${message}"
-    currentBuild.changeSets.each { changeSet ->
-        def browser = changeSet.browser
-        changeSet.each { change ->
-            def link = browser.getChangeSetLink(change).toString()
-            message = "${message}\n- ${change.msg} (<${link}|${link.substring(link.lastIndexOf('/') + 1, link.length()).substring(0, 7)}> by ${change.author.toString()})"
-        }
-    }
+    message = "${(buildStatus == 'FAILURE')?'Failed':'Success'}: ${message}${changesDescription}"
+
     slackSend message: message, color: (buildStatus == 'FAILURE')?'danger':'good'
 }
