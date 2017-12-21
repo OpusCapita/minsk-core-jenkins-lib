@@ -6,12 +6,7 @@ def sendNotification() {
     currentBuild.changeSets.each { changeSet ->
         def browser = changeSet.browser
         changeSet.each { change ->
-            println "Author displayName: ${change.author.displayName}"
-            println "Author id: ${change.author.id}"
-            println "Author fullName: ${change.author.fullName}"
-            println "Author description: ${change.author.description}"
-            println "Author toString(): ${change.author.toString()}"
-            lastChangesetAuthor = change.author.toString()
+            lastChangesetAuthor = hange.author.toString()
             def link = browser.getChangeSetLink(change).toString()
             changesDescription = "${changesDescription}\n- ${change.msg} (<${link}|${link.substring(link.lastIndexOf('/') + 1, link.length()).substring(0, 7)}> by ${change.author.toString()})"
         }
