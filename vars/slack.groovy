@@ -1,7 +1,6 @@
 // sends build notification to preconfigured on server side slack channel
 // current implementation works with GutHub only
 def sendNotification() {
-    println scm
     def message = ""
     wrap([$class: 'BuildUser']) {
         // retrieving repository information
@@ -22,6 +21,7 @@ def sendNotification() {
     message = "${(buildStatus == 'FAILURE')?'Failed':'Success'}: ${message}"
     currentBuild.changeSets.each { changeSet ->
         def browser = changeSet.browser
+        println changeSet
         changeSet.each { change ->
             def link = browser.getChangeSetLink(change).toString()
             message = "${message}\n- ${change.msg} (<${link}|${link.substring(link.lastIndexOf('/') + 1, link.length()).substring(0, 7)}> by ${change.author.toString()})"
