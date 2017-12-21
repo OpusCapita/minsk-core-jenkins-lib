@@ -21,7 +21,6 @@ def sendNotification() {
     message = "${(buildStatus == 'FAILURE')?'Failed':'Success'}: ${message}"
     currentBuild.changeSets.each { changeSet ->
         def browser = changeSet.browser
-        println changeSet
         changeSet.each { change ->
             def link = browser.getChangeSetLink(change).toString()
             message = "${message}\n- ${change.msg} (<${link}|${link.substring(link.lastIndexOf('/') + 1, link.length()).substring(0, 7)}> by ${change.author.toString()})"
