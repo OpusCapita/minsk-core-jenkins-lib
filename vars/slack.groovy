@@ -3,6 +3,7 @@
 def sendNotification() {
     def message = ""
     wrap([$class: 'BuildUser']) {
+        env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
         // retrieving repository information
         def scmInfo = checkout scm
         // extracting branch and whole repo build server job urls if possible
