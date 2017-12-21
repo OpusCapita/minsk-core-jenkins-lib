@@ -1,11 +1,7 @@
 // sends build notification to preconfigured on server side slack channel
 // current implementation works with GutHub only
 def sendNotification() {
-    /*
-    uncommented this code if you want notify message to slake between state change FAILURE -> SUCCESS || SUCCESS -> FAILURE
-    def previousResult = currentBuild.previousBuild?.result
-    notify = previousResult != "FAILURE" && result == "FAILURE") || (result == "SUCCESS" && (previousResult == "FAILURE" || previousResult == "UNSTABLE"))
-    */
+    env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
     def message = ""
     wrap([$class: 'BuildUser']) {
         // retrieving repository information
