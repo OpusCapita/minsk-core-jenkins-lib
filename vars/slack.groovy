@@ -15,6 +15,7 @@ def sendNotification() {
     def message = ""
     wrap([$class: 'BuildUser']) {
         def user = lastChangesetAuthor?:env.BUILD_USER_ID
+        def whoseBuild = user? "${user}'s" : "anonymous build"
         env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
         // retrieving repository information
         def scmInfo = checkout scm
@@ -24,9 +25,9 @@ def sendNotification() {
         if (findings.matches()) {
             def branchBuildUrl = findings.group(1)
             def repositoryBuildUrl = findings.group(2)
-            message = "${user}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in <${repositoryBuildUrl}|${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)}> (<${branchBuildUrl}|${env.BRANCH_NAME}>)"
+            message = "${whoseBuild} build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in <${repositoryBuildUrl}|${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)}> (<${branchBuildUrl}|${env.BRANCH_NAME}>)"
         } else {
-            message = "${user}'s build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in ${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)} (${env.BRANCH_NAME})"
+            message = "${whoseBuild} build (<${env.BUILD_URL}|${env.BUILD_DISPLAY_NAME}>) in ${gitHubUtils.extractRepositoryOwnerAndName(scmInfo.GIT_URL)} (${env.BRANCH_NAME})"
         }
 
     }
