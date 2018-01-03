@@ -15,7 +15,7 @@ def sendNotification() {
     def message = ""
     wrap([$class: 'BuildUser']) {
         def user = lastChangesetAuthor?:env.BUILD_USER_ID
-        def whoseBuild = user? "${user}'s" : "anonymous build"
+        def whoseBuild = user? "${user}'s" : "anonymous"
         env.getEnvironment().each { name, value -> println "Name: $name -> Value $value" }
         // retrieving repository information
         def scmInfo = checkout scm
